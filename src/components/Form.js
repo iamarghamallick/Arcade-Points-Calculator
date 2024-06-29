@@ -70,6 +70,7 @@ const Form = () => {
                         <h2 className="text-base text-center font-bold mb-2">Arcade Points will appear here</h2>
                     </div>
                 )}
+                <div className='p-2'>Note : This is an approximate count. The original Arcade Points may differ.</div>
             </form>
         </>
     );
