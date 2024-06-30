@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import puppeteer from "puppeteer";
 
 const fetchData = async (url) => {
     const res = await fetch(url);
@@ -38,6 +39,75 @@ const calculateArcadePoints = (data) => {
     return arcadePoints;
 }
 
+const validateDate = (dateStr) => {
+    // todo
+    return true;
+}
+
+const milestoneReached = (points) => {
+    if (points >= 70) return "Champions";
+    if (points >= 60) return "Premium Plus";
+    if (points >= 40) return "Premium";
+    if (points >= 25) return "Advanced";
+    if (points >= 10) return "Standerd";
+    return null;
+}
+
+const scraping = async (url) => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(url, {
+        waitUntil: "domcontentloaded",
+    });
+
+    const badges = await page.evaluate(() => {
+        const badgeList = document.querySelectorAll(".profile-badge");
+
+        return Array.from(badgeList).map((badge) => {
+            const title = badge.querySelector(".ql-title-medium").innerText;
+            const dateEarned = badge.querySelector(".ql-body-medium").innerText;
+            return { title, dateEarned };
+        })
+    });
+
+    // console.log(badges);
+
+    await browser.close();
+
+    return badges;
+};
+
+const arcadePointsCalculator = (data) => {
+    const totalBadges = data.length;
+    let arcadePoints = 0;
+    let badgeCounted = 0;
+    data.forEach(badge => {
+        if (validateDate(badge.dateEarned) && (
+            badge.title.includes("Level") ||
+            badge.title.includes("The Arcade Trivia") ||
+            badge.title.includes("The Arcade Certification Zone")
+        )) {
+            arcadePoints++;
+            badgeCounted++;
+        }
+        else if (validateDate(badge.dateEarned) && (
+            badge.title.includes("Arcade Carnival") ||
+            badge.title.includes("The Arcade Skills Splash") ||
+            badge.title.includes("The Arcade Skills League") ||
+            badge.title.includes("The Arcade Health Tech") ||
+            badge.title.includes("The Arcade June Speedrun")
+        )) {
+            arcadePoints += 2;
+            badgeCounted++;
+        }
+    });
+
+    let skillBadges = totalBadges - badgeCounted;
+    arcadePoints += Math.floor(skillBadges / 2);
+
+    return arcadePoints;
+}
+
 export async function GET() {
     return NextResponse.json(
         { developerName: "Argha Mallick" },
@@ -47,11 +117,11 @@ export async function GET() {
 
 export async function POST(req) {
     const userData = await req.json();
-    const data = await fetchData(userData.url);
-    const arcadePoints = calculateArcadePoints(data);
+    const data = await scraping(userData.url);
+    const arcadePoints = arcadePointsCalculator(data);
     console.log(`Arcade Points: ${arcadePoints}`);
     return NextResponse.json(
-        { points: arcadePoints },
+        { points: arcadePoints, milestone: milestoneReached(arcadePoints) },
         { status: 200 }
     )
 }
