@@ -1,5 +1,6 @@
 # Google Cloud Arcade Points Calculator
-![image](https://github.com/iamarghamallick/Arcade-Points-Calculator/assets/86346861/9edbf4d0-ae16-4a54-87ab-c15afe7b8dc1)
+![image](https://github.com/iamarghamallick/Arcade-Points-Calculator/assets/86346861/74b16527-ebb5-45ac-af50-013eae4f1f61)
 
 
-Note: It may display incorrect points count.
+
+Note: This not an official points counter.
