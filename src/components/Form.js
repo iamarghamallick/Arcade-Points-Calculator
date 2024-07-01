@@ -44,6 +44,7 @@ const Form = () => {
             }
 
             const data = await response.json();
+            console.log(data);
             const points = data.points;
             const milestone = data.milestone;
             setResponseData(points);

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
+import axios from "axios";
+import cheerio from "cheerio";
 
 const fetchData = async (url) => {
     const res = await fetch(url);
@@ -77,6 +79,32 @@ const scraping = async (url) => {
     return badges;
 };
 
+const scrapWebPage = async (url) => {
+    const axiosResponse = await axios.request({
+        method: "GET",
+        url: url,
+        Headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+        }
+    })
+    // console.log(axiosResponse.data);
+
+    const $ = cheerio.load(axiosResponse.data);
+
+    const badges = [];
+
+    $('.profile-badges').find($('.profile-badge')).each((index, element) => {
+        const title = $(element).find('.ql-title-medium').text().trim();
+        const dateEarned = $(element).find('.ql-body-medium').text().trim();
+
+        badges.push({ title, dateEarned });
+    });
+
+    // console.log(badges);
+
+    return badges;
+};
+
 const arcadePointsCalculator = (data) => {
     const totalBadges = data.length;
     let arcadePoints = 0;
@@ -117,11 +145,17 @@ export async function GET() {
 
 export async function POST(req) {
     const userData = await req.json();
-    const data = await scraping(userData.url);
+    const data = await scrapWebPage(userData.url);
     const arcadePoints = arcadePointsCalculator(data);
-    console.log(`Arcade Points: ${arcadePoints}`);
-    return NextResponse.json(
-        { points: arcadePoints, milestone: milestoneReached(arcadePoints) },
+    console.log({
+        "puclic_profile": userData.url,
+        "Arcade Points": arcadePoints
+    });
+    return NextResponse.json({
+        badges: data,
+        points: arcadePoints,
+        milestone: milestoneReached(arcadePoints)
+    },
         { status: 200 }
     )
 }
