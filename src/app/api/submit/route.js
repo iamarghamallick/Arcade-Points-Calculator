@@ -42,8 +42,7 @@ const calculateArcadePoints = (data) => {
 }
 
 const validateDate = (dateStr) => {
-    // todo
-    return true;
+    return dateStr.includes("2024");
 }
 
 const milestoneReached = (points) => {
@@ -51,7 +50,7 @@ const milestoneReached = (points) => {
     if (points >= 60) return "Premium Plus";
     if (points >= 40) return "Premium";
     if (points >= 25) return "Advanced";
-    if (points >= 10) return "Standerd";
+    if (points >= 10) return "Standard";
     return null;
 }
 
@@ -106,7 +105,7 @@ const scrapWebPage = async (url) => {
 };
 
 const arcadePointsCalculator = (data) => {
-    const totalBadges = data.length;
+    let totalBadges = 0;
     let arcadePoints = 0;
     let badgeCounted = 0;
     data.forEach(badge => {
@@ -115,19 +114,20 @@ const arcadePointsCalculator = (data) => {
             badge.title.includes("The Arcade Trivia") ||
             badge.title.includes("The Arcade Certification Zone")
         )) {
+            totalBadges++;
             arcadePoints++;
             badgeCounted++;
-        }
-        else if (validateDate(badge.dateEarned) && (
+        } else if (validateDate(badge.dateEarned) && (
             badge.title.includes("Arcade Carnival") ||
             badge.title.includes("The Arcade Skills Splash") ||
             badge.title.includes("The Arcade Skills League") ||
             badge.title.includes("The Arcade Health Tech") ||
             badge.title.includes("The Arcade June Speedrun")
         )) {
+            totalBadges++;
             arcadePoints += 2;
             badgeCounted++;
-        }
+        } else if (validateDate(badge.dateEarned)) totalBadges++;
     });
 
     let skillBadges = totalBadges - badgeCounted;
