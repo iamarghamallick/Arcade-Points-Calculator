@@ -3,44 +3,6 @@ import puppeteer from "puppeteer";
 import axios from "axios";
 import cheerio from "cheerio";
 
-const fetchData = async (url) => {
-    const res = await fetch(url);
-    const data = await res.text();
-    console.log(data);
-    return data;
-}
-
-const countProfileBadges = (str, phrase) => {
-    const regex = new RegExp(`${phrase}`, 'gi');
-    const matches = str.match(regex);
-    const count = matches ? matches.length : 0;
-    return parseInt(count);
-}
-
-const calculateArcadePoints = (data) => {
-    // total number of badges in the profile
-    const countBadges = countProfileBadges(data, "<div class='profile-badge'>"); // 87
-
-    // count of arcade levels + trivias + specials badges + certifications zone badges
-    const countTrivia = countProfileBadges(data, "Badge for The Arcade Trivia"); // 21
-    const countLevel = countProfileBadges(data, "Badge for Level"); // 16
-    const countCertZones = countProfileBadges(data, "Badge for The Arcade Certification Zone"); // 5
-
-    // count of special badges separately (which include 2 arcade points)
-    const specialBadgeFeb = countProfileBadges(data, "Badge for Arcade Carnival");
-    const specialBadgeMer = countProfileBadges(data, "Badge for The Arcade Skills Splash");
-    const specialBadgeApr = countProfileBadges(data, "Badge for The Arcade Skills League");
-    const specialBadgeMay = countProfileBadges(data, "Badge for The Arcade Health Tech");
-    const specialBadgeJun = countProfileBadges(data, "Badge for The Arcade June Speedrun");
-    const totalSpecialBadges = specialBadgeFeb + specialBadgeMer + specialBadgeApr + specialBadgeMay + specialBadgeJun;
-
-    const totalSkillBadges = countBadges - (countTrivia + countLevel + totalSpecialBadges + countCertZones);
-
-    const arcadePoints = countTrivia + countLevel + countCertZones + (totalSpecialBadges * 2) + (totalSkillBadges / 2);
-
-    return arcadePoints;
-}
-
 const validateDate = (dateStr) => {
     return dateStr.includes("2024");
 }
@@ -53,30 +15,6 @@ const milestoneReached = (points) => {
     if (points >= 10) return "Standard";
     return null;
 }
-
-const scraping = async (url) => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(url, {
-        waitUntil: "domcontentloaded",
-    });
-
-    const badges = await page.evaluate(() => {
-        const badgeList = document.querySelectorAll(".profile-badge");
-
-        return Array.from(badgeList).map((badge) => {
-            const title = badge.querySelector(".ql-title-medium").innerText;
-            const dateEarned = badge.querySelector(".ql-body-medium").innerText;
-            return { title, dateEarned };
-        })
-    });
-
-    // console.log(badges);
-
-    await browser.close();
-
-    return badges;
-};
 
 const scrapWebPage = async (url) => {
     const axiosResponse = await axios.request({
@@ -108,6 +46,7 @@ const arcadePointsCalculator = (data) => {
     let totalBadges = 0;
     let arcadePoints = 0;
     let badgeCounted = 0;
+    let newData = [];
     data.forEach(badge => {
         if (validateDate(badge.dateEarned) && (
             badge.title.includes("Level") ||
@@ -117,6 +56,8 @@ const arcadePointsCalculator = (data) => {
             totalBadges++;
             arcadePoints++;
             badgeCounted++;
+            badge.points = 1;
+            newData.push(badge);
         } else if (validateDate(badge.dateEarned) && (
             badge.title.includes("Arcade Carnival") ||
             badge.title.includes("The Arcade Skills Splash") ||
@@ -127,33 +68,35 @@ const arcadePointsCalculator = (data) => {
             totalBadges++;
             arcadePoints += 2;
             badgeCounted++;
-        } else if (validateDate(badge.dateEarned)) totalBadges++;
+            badge.points = 2;
+            newData.push(badge);
+        } else if (validateDate(badge.dateEarned)) {
+            totalBadges++;
+            badge.points = 0.5;
+            newData.push(badge);
+        }
     });
 
     let skillBadges = totalBadges - badgeCounted;
+    let totalPoints = arcadePoints + (skillBadges / 2);
     arcadePoints += Math.floor(skillBadges / 2);
 
-    return arcadePoints;
-}
-
-export async function GET() {
-    return NextResponse.json(
-        { developerName: "Argha Mallick" },
-        { status: 200 }
-    )
+    return { newData, arcadePoints, totalPoints };
 }
 
 export async function POST(req) {
     const userData = await req.json();
     const data = await scrapWebPage(userData.url);
-    const arcadePoints = arcadePointsCalculator(data);
+    const { newData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
+    // console.log(newData);
     console.log({
         "puclic_profile": userData.url,
         "Arcade Points": arcadePoints
     });
     return NextResponse.json({
-        badges: data,
+        badges: newData,
         points: arcadePoints,
+        totalPoints: totalPoints,
         milestone: milestoneReached(arcadePoints)
     },
         { status: 200 }

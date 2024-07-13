@@ -3,7 +3,8 @@ import { useState } from 'react';
 
 const Form = () => {
     const [formData, setFormData] = useState({ url: '' });
-    const [responseData, setResponseData] = useState(null);
+    const [arcadePoints, setArcadePoints] = useState(null);
+    const [totalPoints, setTotalPoints] = useState(null);
     const [milestoneData, setMilestoneData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -49,8 +50,10 @@ const Form = () => {
             const points = data.points;
             const milestone = data.milestone;
             const badgesList = data.badges;
-            setResponseData(points);
+            const total = data.totalPoints;
+            setArcadePoints(points);
             setMilestoneData(milestone);
+            setTotalPoints(total);
             setListOfBadges(badgesList);
         } catch (error) {
             setError(error.message);
@@ -79,9 +82,9 @@ const Form = () => {
                 {error && <div className="mt-4 p-4 bg-gray-900 rounded text-center">
                     <h2 className="text-lg text-center font-normal text-red-500 mb-2">{error}</h2>
                 </div>}
-                {responseData ? (
+                {arcadePoints ? (
                     <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                        <h2 className="text-lg text-center font-bold mb-2">Arcade Points: {responseData}</h2>
+                        <h2 className="text-lg text-center font-bold mb-2">Arcade Points: {arcadePoints}</h2>
                         {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">{milestoneData} Milestone</h2>}
                     </div>
                 ) : (
@@ -97,15 +100,19 @@ const Form = () => {
                 <table className='border-collapse w-full mb-4'>
                     <tbody>
                         <tr>
-                            <th className='border-gray-400 text-center p-2 text-bold bg-slate-600'>Title</th>
-                            <th className='border-gray-400 text-center p-2 text-bold bg-slate-600'>Date Earned</th>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600'>Title</th>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600'>{"Arcade Point(s)"}</th>
                         </tr>
                         {listOfBadges.map((badge) => {
                             return <tr key={badge.title}>
-                                <td className='border-gray-400 text-left p-2'>{badge.title}</td>
-                                <td className='border-gray-400 text-left p-2'>{badge.dateEarned}</td>
+                                <td className='text-left p-2'>{badge.title}</td>
+                                <td className='text-center text-bold p-2'>{badge.points}</td>
                             </tr>
                         })}
+                        <tr>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600'>Total Points</th>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600'>{totalPoints}</th>
+                        </tr>
                     </tbody>
                 </table>
             </section>}
