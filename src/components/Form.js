@@ -7,6 +7,7 @@ const Form = () => {
     const [milestoneData, setMilestoneData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [listOfBadges, setListOfBadges] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -47,8 +48,10 @@ const Form = () => {
             console.log(data);
             const points = data.points;
             const milestone = data.milestone;
+            const badgesList = data.badges;
             setResponseData(points);
             setMilestoneData(milestone);
+            setListOfBadges(badgesList);
         } catch (error) {
             setError(error.message);
         } finally {
@@ -58,7 +61,7 @@ const Form = () => {
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="w-80 md:w-96 p-4 bg-gray-500 shadow-md rounded">
+            <form onSubmit={handleSubmit} className="w-80 md:w-96 mt-8 p-4 bg-gray-500 shadow-md rounded">
                 <div className="mb-4">
                     <label htmlFor="url" className="block text-gray-200 font-bold mb-2 text-center">Paste the Public Profile URL</label>
                     <input
@@ -79,7 +82,7 @@ const Form = () => {
                 {responseData ? (
                     <div className="mt-4 p-4 bg-gray-900 rounded text-center">
                         <h2 className="text-lg text-center font-bold mb-2">Arcade Points: {responseData}</h2>
-                        {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">You have reached {milestoneData} Milestone!</h2>}
+                        {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">{milestoneData} Milestone</h2>}
                     </div>
                 ) : (
                     <div className="mt-4 p-4 bg-gray-900 rounded text-center">
@@ -87,8 +90,25 @@ const Form = () => {
                     </div>
                 )}
                 <div className='p-2'>Note: Completion Badges may be counted as a Skill Badge.</div>
-                <div className='p-2 text-green-400'>Last Updated: 30th June, 2024</div>
+                <div className='p-2 text-green-400'>Last Updated: 13 July, 2024</div>
             </form>
+            {listOfBadges && <section>
+                <h1 className='text-center text-xl font-bold m-4 bg-slate-600 pt-2 pb-2'>List of Badges</h1>
+                <table className='border-collapse w-full mb-4'>
+                    <tbody>
+                        <tr>
+                            <th className='border-gray-400 text-center p-2 text-bold bg-slate-600'>Title</th>
+                            <th className='border-gray-400 text-center p-2 text-bold bg-slate-600'>Date Earned</th>
+                        </tr>
+                        {listOfBadges.map((badge) => {
+                            return <tr key={badge.title}>
+                                <td className='border-gray-400 text-left p-2'>{badge.title}</td>
+                                <td className='border-gray-400 text-left p-2'>{badge.dateEarned}</td>
+                            </tr>
+                        })}
+                    </tbody>
+                </table>
+            </section>}
         </>
     );
 };

@@ -1,10 +1,15 @@
+import Footer from "@/components/Footer";
 import Form from "@/components/Form";
+import Header from "@/components/Header";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-2">
-      <h1 className="p-4 text-xl">Arcade Points Calculator</h1>
-      <Form />
-    </main>
+    <>
+      <Header />
+      <main className="flex min-h-screen flex-col items-center">
+        <Form />
+      </main>
+      <Footer />
+    </>
   );
 }
