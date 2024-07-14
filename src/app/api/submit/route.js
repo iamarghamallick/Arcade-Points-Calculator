@@ -46,18 +46,27 @@ const arcadePointsCalculator = (data) => {
     let totalBadges = 0;
     let arcadePoints = 0;
     let badgeCounted = 0;
-    let newData = [];
+    let allBadgesData = [], gameBadgesData = [], triviaBadgesData = [], specialBadgesData = [], skillBadgesData = [];
     data.forEach(badge => {
         if (validateDate(badge.dateEarned) && (
             badge.title.includes("Level") ||
-            badge.title.includes("The Arcade Trivia") ||
             badge.title.includes("The Arcade Certification Zone")
         )) {
             totalBadges++;
             arcadePoints++;
             badgeCounted++;
             badge.points = 1;
-            newData.push(badge);
+            allBadgesData.push(badge);
+            gameBadgesData.push(badge);
+        } else if (validateDate(badge.dateEarned) && (
+            badge.title.includes("The Arcade Trivia")
+        )) {
+            totalBadges++;
+            arcadePoints++;
+            badgeCounted++;
+            badge.points = 1;
+            allBadgesData.push(badge);
+            triviaBadgesData.push(badge);
         } else if (validateDate(badge.dateEarned) && (
             badge.title.includes("Arcade Carnival") ||
             badge.title.includes("The Arcade Skills Splash") ||
@@ -69,11 +78,13 @@ const arcadePointsCalculator = (data) => {
             arcadePoints += 2;
             badgeCounted++;
             badge.points = 2;
-            newData.push(badge);
+            allBadgesData.push(badge);
+            specialBadgesData.push(badge);
         } else if (validateDate(badge.dateEarned)) {
             totalBadges++;
             badge.points = 0.5;
-            newData.push(badge);
+            allBadgesData.push(badge);
+            skillBadgesData.push(badge);
         }
     });
 
@@ -81,20 +92,24 @@ const arcadePointsCalculator = (data) => {
     let totalPoints = arcadePoints + (skillBadges / 2);
     arcadePoints += Math.floor(skillBadges / 2);
 
-    return { newData, arcadePoints, totalPoints };
+    return { allBadgesData, gameBadgesData, triviaBadgesData, specialBadgesData, skillBadgesData, arcadePoints, totalPoints };
 }
 
 export async function POST(req) {
     const userData = await req.json();
     const data = await scrapWebPage(userData.url);
-    const { newData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
-    // console.log(newData);
+    const { allBadgesData, gameBadgesData, triviaBadgesData, specialBadgesData, skillBadgesData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
+    // console.log(allBadgesData);
     console.log({
         "puclic_profile": userData.url,
         "Arcade Points": arcadePoints
     });
     return NextResponse.json({
-        badges: newData,
+        badges: allBadgesData,
+        game: gameBadgesData,
+        trivia: triviaBadgesData,
+        special: specialBadgesData,
+        skill: skillBadgesData,
         points: arcadePoints,
         totalPoints: totalPoints,
         milestone: milestoneReached(arcadePoints)
