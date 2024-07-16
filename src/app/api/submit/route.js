@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
 import axios from "axios";
 import cheerio from "cheerio";
 
@@ -33,8 +32,9 @@ const scrapWebPage = async (url) => {
     $('.profile-badges').find($('.profile-badge')).each((index, element) => {
         const title = $(element).find('.ql-title-medium').text().trim();
         const dateEarned = $(element).find('.ql-body-medium').text().trim();
-
-        badges.push({ title, dateEarned });
+        const imageURL = $(element).find('img').attr('src');
+        const badgeURL = $(element).find('.badge-image').attr('href');
+        badges.push({ title, dateEarned, imageURL, badgeURL });
     });
 
     // console.log(badges);

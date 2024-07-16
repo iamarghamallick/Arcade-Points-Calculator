@@ -10,7 +10,7 @@ const Header = () => {
             <div className="flex h-16 items-center justify-between px-4">
                 <div className='text-left text-xl md:text-2xl font-bold'><Link href="/">Arcade Points Calculator</Link></div>
                 <div className="ml-2 flex items-center space-x-4">
-                    <Link href='https://www.cloudskillsboost.google/' target='_blank'><Image src='/google-cloud-logo.webp' alt='GCP' width={60} height={60}></Image></Link>
+                    <Link href='https://go.qwiklabs.com/arcade' target='_blank'><Image src='/google-cloud-logo.webp' alt='GCP' width={60} height={60}></Image></Link>
                 </div>
             </div>
         </div>

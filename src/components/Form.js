@@ -1,5 +1,7 @@
 "use client"
 import { useState } from 'react';
+import Loader from './Loader';
+import Link from 'next/link';
 
 const Form = () => {
     const [formData, setFormData] = useState({ url: '' });
@@ -10,6 +12,8 @@ const Form = () => {
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
     const [listOfBadges, setListOfBadges] = useState(null);
+    const [badgeValText, setBadgeValText] = useState("All Badges");
+    const [badgeValPoint, setBadgeValPoint] = useState(0);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,16 +30,27 @@ const Form = () => {
 
     const handleBadgeChange = (e) => {
         const badgeVal = e.target.value;
-        if (badgeVal === "allBadges")
+        if (badgeVal === "allBadges") {
             setListOfBadges(result.badges);
-        else if (badgeVal === "gameBadges")
+            setBadgeValText("All Badges");
+            setBadgeValPoint(totalPoints);
+        } else if (badgeVal === "gameBadges") {
             setListOfBadges(result.game);
-        else if (badgeVal === "triviaBadges")
+            setBadgeValText("Game Badges");
+            setBadgeValPoint(result.game.length);
+        } else if (badgeVal === "triviaBadges") {
             setListOfBadges(result.trivia);
-        else if (badgeVal === "specialBadges")
+            setBadgeValText("Trivia Badges");
+            setBadgeValPoint(result.trivia.length);
+        } else if (badgeVal === "specialBadges") {
             setListOfBadges(result.special);
-        else if (badgeVal === "skillBadges")
+            setBadgeValText("Special Badges");
+            setBadgeValPoint(result.special.length * 2);
+        } else if (badgeVal === "skillBadges") {
             setListOfBadges(result.skill);
+            setBadgeValText("Skill Badges");
+            setBadgeValPoint(result.skill.length / 2);
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -63,14 +78,11 @@ const Form = () => {
             const data = await response.json();
             console.log(data);
             setResult(data);
-            const points = data.points;
-            const milestone = data.milestone;
-            const badgesList = data.badges;
-            const total = data.totalPoints;
-            setArcadePoints(points);
-            setMilestoneData(milestone);
-            setTotalPoints(total);
-            setListOfBadges(badgesList);
+            setArcadePoints(data.points);
+            setMilestoneData(data.milestone);
+            setTotalPoints(data.totalPoints);
+            setBadgeValPoint(data.totalPoints);
+            setListOfBadges(data.badges);
         } catch (error) {
             setError(error.message);
         } finally {
@@ -92,8 +104,8 @@ const Form = () => {
                         className="w-full px-3 py-2 bg-[#101823] border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
                     />
                 </div>
-                <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                    {loading ? "Calculating..." : "Submit"}
+                <button type="submit" className="flex justify-center items-center w-full text-gray-950 font-bold text-xl bg-gray-300 py-2 px-4 rounded hover:bg-gray-200">
+                    {loading ? <Loader /> : "Calculate"}
                 </button>
                 {error && <div className="mt-4 p-4 bg-gray-900 rounded text-center">
                     <h2 className="text-lg text-center font-normal text-red-500 mb-2">{error}</h2>
@@ -109,7 +121,7 @@ const Form = () => {
                     </div>
                 )}
                 <div className='p-2'>Note: Completion Badges may be counted as a Skill Badge.</div>
-                <div className='p-2 text-green-400'>Last Updated: 13 July, 2024</div>
+                <div className='p-2 text-green-400'>Last Updated: 15 July, 2024</div>
             </form>
             {result && <section>
                 <select name="badges" id="badges" className='mt-4 mb-4 w-full md:min-w-[700px] bg-slate-600 p-4 text-xl font-bold outline-none cursor-pointer' onChange={handleBadgeChange} defaultValue="allBadges">
@@ -127,13 +139,15 @@ const Form = () => {
                         </tr>
                         {listOfBadges.map((badge) => {
                             return <tr key={badge.title} className=' border border-gray-400'>
-                                <td className='text-left p-2 border-r border-gray-400'>{badge.title}</td>
+                                <td className='text-left p-2 border-r border-gray-400'>
+                                    <Link href={badge.badgeURL} target='_blank'>{badge.title}</Link>
+                                </td>
                                 <td className='text-center text-bold p-2'>{badge.points}</td>
                             </tr>
                         })}
                         <tr className=' border border-gray-200'>
-                            <th className='text-center p-2 text-bold text-xl bg-slate-600 border-r border-gray-400'>Total Points Earned</th>
-                            <th className='text-center p-2 text-bold text-xl bg-slate-600'>{totalPoints}</th>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600 border-r border-gray-400'>{`Total Points Earned from ${badgeValText}`}</th>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600'>{badgeValPoint}</th>
                         </tr>
                     </tbody>
                 </table>
