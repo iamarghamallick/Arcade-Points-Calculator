@@ -92,38 +92,45 @@ const Form = () => {
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="w-80 md:w-96 mt-8 p-4 bg-gray-500 shadow-md rounded">
-                <div className="mb-4">
-                    <label htmlFor="url" className="block text-gray-200 font-bold mb-2 text-center">Paste the Public Profile URL</label>
-                    <input
-                        type="text"
-                        id="url"
-                        name="url"
-                        value={formData.url}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 bg-[#101823] border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
-                    />
+            <div className='md: container w-80 md:w-[97%] mt-8 mb-8 p-4 bg-gray-500 shadow-md rounded flex flex-col  md:flex-row justify-center items-center gap-6'>
+                <form onSubmit={handleSubmit} className="w-full md:w-[50%]">
+                    <div className="mb-4">
+                        <label htmlFor="url" className="block text-gray-200 font-bold mb-2 text-center">Paste the Public Profile URL</label>
+                        <input
+                            type="text"
+                            id="url"
+                            name="url"
+                            value={formData.url}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 bg-[#101823] border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+                        />
+                    </div>
+                    <button type="submit" className="flex justify-center items-center w-full text-gray-950 font-bold text-xl bg-gray-300 py-2 px-4 rounded hover:bg-gray-200">
+                        {loading ? <Loader /> : "Calculate"}
+                    </button>
+                    {error && <div className="mt-4 p-4 bg-gray-900 rounded text-center">
+                        <h2 className="text-lg text-center font-normal text-red-500 mb-2">{error}</h2>
+                    </div>}
+                    {arcadePoints ? (
+                        <div className="mt-4 p-4 bg-gray-900 rounded text-center">
+                            <h2 className="text-lg text-center font-bold mb-2">Arcade Points: {arcadePoints}</h2>
+                            {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">{milestoneData} Milestone</h2>}
+                        </div>
+                    ) : (
+                        <div className="mt-4 p-4 bg-gray-900 rounded text-center">
+                            <h2 className="text-base text-center font-bold mb-2">Arcade Points will appear here</h2>
+                        </div>
+                    )}
+                </form>
+
+                <div className='w-full md:w-[50%]'>
+                    <div className='p-2 font-bold text-center underline'>Please Note</div>
+                    <div className='p-2'>1. <strong>Completion Badges</strong> may be counted as a <strong>Skill Badge.</strong></div>
+                    <div className='p-2'>2. Arcade Points shown above doesn't include any <strong>Bonus Points</strong> of the <strong>Facilitator Program</strong>.</div>
+                    <div className='p-2 text-green-300 text-center'>Last Updated: <strong>23 July, 2024</strong></div>
                 </div>
-                <button type="submit" className="flex justify-center items-center w-full text-gray-950 font-bold text-xl bg-gray-300 py-2 px-4 rounded hover:bg-gray-200">
-                    {loading ? <Loader /> : "Calculate"}
-                </button>
-                {error && <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                    <h2 className="text-lg text-center font-normal text-red-500 mb-2">{error}</h2>
-                </div>}
-                {arcadePoints ? (
-                    <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                        <h2 className="text-lg text-center font-bold mb-2">Arcade Points: {arcadePoints}</h2>
-                        {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">{milestoneData} Milestone</h2>}
-                    </div>
-                ) : (
-                    <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                        <h2 className="text-base text-center font-bold mb-2">Arcade Points will appear here</h2>
-                    </div>
-                )}
-                <div className='p-2'>Note: Completion Badges may be counted as a Skill Badge.</div>
-                <div className='p-2 text-green-400'>Last Updated: 15 July, 2024</div>
-            </form>
-            {result && <section>
+            </div>
+            {result && <section className='container'>
                 <select name="badges" id="badges" className='mt-4 mb-4 w-full md:min-w-[700px] bg-slate-600 p-4 text-xl font-bold outline-none cursor-pointer' onChange={handleBadgeChange} defaultValue="allBadges">
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="allBadges">All Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="gameBadges">Game Badges</option>

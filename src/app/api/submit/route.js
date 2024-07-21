@@ -3,15 +3,27 @@ import axios from "axios";
 import cheerio from "cheerio";
 
 const validateDate = (dateStr) => {
-    return dateStr.includes("2024");
+    const regex = /Earned (\w+)\s+(\d{1,2}),\s+(\d{4})/;
+    const match = dateStr.match(regex);
+
+    const monthMap = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+
+    if (match) {
+        const month = monthMap[match[1]];
+        const date = parseInt(match[2], 10);
+        const year = parseInt(match[3], 10);
+
+        return (month == 7 && date >= 22 && year == 2024) || (month > 7 && year == 2024);
+    }
+    return false;
 }
 
 const milestoneReached = (points) => {
-    if (points >= 70) return "Champions";
-    if (points >= 60) return "Premium Plus";
-    if (points >= 40) return "Premium";
-    if (points >= 25) return "Advanced";
-    if (points >= 10) return "Standard";
+    // if (points >= 70) return "Champions";
+    // if (points >= 60) return "Premium Plus";
+    // if (points >= 40) return "Premium";
+    // if (points >= 25) return "Advanced";
+    // if (points >= 10) return "Standard";
     return null;
 }
 
@@ -43,6 +55,7 @@ const scrapWebPage = async (url) => {
 };
 
 const arcadePointsCalculator = (data) => {
+    // todo
     let totalBadges = 0;
     let arcadePoints = 0;
     let badgeCounted = 0;

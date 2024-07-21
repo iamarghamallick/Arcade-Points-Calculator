@@ -34,3 +34,26 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
   background-color: #1f1f1f;
 }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #172055;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #687388;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1b2546 gray;
+}
