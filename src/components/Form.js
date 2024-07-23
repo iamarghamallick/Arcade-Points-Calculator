@@ -127,7 +127,7 @@ const Form = () => {
                     <div className='p-2 font-bold text-center underline'>Please Note</div>
                     <div className='p-2'>1. <strong>Completion Badges</strong> may be counted as a <strong>Skill Badge.</strong></div>
                     <div className='p-2'>2. Arcade Points shown here doesn't include any <strong>Bonus Points</strong> of the <strong>Facilitator Program</strong>.</div>
-                    <div className='p-2 text-green-300 text-center'>Last Updated: <strong>23 July, 2024</strong></div>
+                    <div className='p-2 text-green-300 text-center'>Last Updated: <strong>24 July, 2024</strong></div>
                 </div>
             </div>
             {result && <section className='container'>
