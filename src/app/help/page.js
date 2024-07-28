@@ -7,6 +7,7 @@ export default function Help() {
         <>
             <Header />
             <main className="flex min-h-screen flex-col items-center">
+                <h1 className="text-xl text-gray-200 mt-4">User Query Form</h1>
                 <HelpForm />
             </main>
             <Footer />

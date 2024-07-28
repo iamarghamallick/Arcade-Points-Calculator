@@ -47,7 +47,7 @@ const HelpForm = () => {
                     message: '',
                 });
                 setLoading(false);
-                setResponseText("Thank You for your response! We'll get back to you soon.");
+                setResponseText(`Thank You for your response! You may expect a feedback within few hours in your email (${formData.email}).`);
             } else {
                 console.error('Form submission error');
                 setLoading(false);
@@ -66,13 +66,11 @@ const HelpForm = () => {
         <section className='container mx-auto'>
             <form ref={formRef} onSubmit={handleSubmit} className="m-8 max-w-lg mx-auto p-6 bg-gray-600 rounded-lg shadow-md">
                 <div className="mb-4">
-                    <label className="block text-gray-100 text-sm font-bold mb-2" htmlFor="name">
-                        Name
-                    </label>
                     <input
                         id="name"
                         name="name"
                         type="text"
+                        placeholder='Name'
                         value={formData.name}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
@@ -80,13 +78,11 @@ const HelpForm = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-100 text-sm font-bold mb-2" htmlFor="email">
-                        Email
-                    </label>
                     <input
                         id="email"
                         name="email"
                         type="email"
+                        placeholder='Email'
                         value={formData.email}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
@@ -94,13 +90,11 @@ const HelpForm = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-100 text-sm font-bold mb-2" htmlFor="public_profile_url">
-                        Public Profile URL
-                    </label>
                     <input
                         id="public_profile_url"
                         name="public_profile_url"
                         type="url"
+                        placeholder='Public Profile URL'
                         value={formData.public_profile_url}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
@@ -108,13 +102,11 @@ const HelpForm = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-100 text-sm font-bold mb-2" htmlFor="arcade_points_shown">
-                        Arcade Points Shown Here
-                    </label>
                     <input
                         id="arcade_points_shown"
                         name="arcade_points_shown"
                         type="number"
+                        placeholder='Arcade Points Shown Here'
                         value={formData.arcade_points_shown}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
@@ -122,13 +114,11 @@ const HelpForm = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-100 text-sm font-bold mb-2" htmlFor="arcade_points_org">
-                        Arcade Points You Think
-                    </label>
                     <input
                         id="arcade_points_org"
                         name="arcade_points_org"
                         type="number"
+                        placeholder='Arcade Points You Think'
                         value={formData.arcade_points_org}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"
@@ -136,12 +126,10 @@ const HelpForm = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-100 text-sm font-bold mb-2" htmlFor="message">
-                        Message
-                    </label>
                     <textarea
                         id="message"
                         name="message"
+                        placeholder='Message'
                         value={formData.message}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline bg-gray-800"

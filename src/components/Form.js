@@ -100,6 +100,7 @@ const Form = () => {
                             type="text"
                             id="url"
                             name="url"
+                            placeholder='https://www.cloudskillsboost.google/public_profiles/<unique-id>'
                             value={formData.url}
                             onChange={handleChange}
                             className="w-full px-3 py-2 bg-[#101823] border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
@@ -131,6 +132,7 @@ const Form = () => {
                 </div>
             </div>
             {result && <section className='container'>
+                <h1 className='p-2 font-bold text-center underline'>Details</h1>
                 <select name="badges" id="badges" className='mt-4 mb-4 w-full md:min-w-[700px] bg-slate-600 p-4 text-xl font-bold outline-none cursor-pointer' onChange={handleBadgeChange} defaultValue="allBadges">
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="allBadges">All Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="gameBadges">Game Badges</option>
@@ -158,8 +160,14 @@ const Form = () => {
                         </tr>
                     </tbody>
                 </table>
-                <h1 className='text-gray-100 text-sm mt-4 ml-1'># Skill Badges earned during <strong>Skill Badge Monsoon Challenge 2024</strong> are only displayed under <strong>Monsoon Badges Category.</strong></h1>
-                <h1 className='text-gray-100 text-sm mb-4 ml-1'># If you believe there is an error in the points calculated, please fill out <Link href="/help"><strong className='underline'>this form</strong></Link>.</h1>
+                <div className='flex text-left gap-2 mt-2 p-1 text-sm'>
+                    <h1>#</h1>
+                    <h1>Skill Badges earned during <strong>Skill Badge Monsoon Challenge 2024</strong> are only displayed under <strong>Monsoon Badges Category.</strong></h1>
+                </div>
+                <div className='flex text-left gap-2 mb-8 p-1 text-sm'>
+                    <h1>#</h1>
+                    <h1>If you believe there is an error in the points calculated, please fill out <Link href="/help"><strong className='underline'>User Query Form</strong></Link>.</h1>
+                </div>
             </section>}
         </>
     );
