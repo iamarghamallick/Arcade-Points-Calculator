@@ -14,13 +14,17 @@ const Form = () => {
     const [listOfBadges, setListOfBadges] = useState(null);
     const [badgeValText, setBadgeValText] = useState("All Badges");
     const [badgeValPoint, setBadgeValPoint] = useState(0);
+    const [status, setStatus] = useState("Waiting for the Input...");
 
     const handleChange = (e) => {
+        setStatus("Waiting for a valid Input...");
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
         });
+        if (validateURL(value))
+            setStatus("URL validated, calculate now.")
     };
 
     const validateURL = (url) => {
@@ -59,12 +63,18 @@ const Form = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const startTime = performance.now();
         setLoading(true);
+        setStatus("Waiting for the server...");
         setError(null);
 
         try {
             if (!validateURL(formData.url)) {
                 setError("Wrong URL");
+                setTimeout(() => {
+                    setError(null);
+                    setStatus("Waiting for a valid Input...");
+                }, 2000);
                 return;
             }
             const response = await fetch('/api/submit', {
@@ -92,19 +102,21 @@ const Form = () => {
         } finally {
             setLoading(false);
         }
+        const endTime = performance.now();
+        const timeTaken = endTime - startTime;
+        console.log(`Response Time: ${timeTaken} ms`);
     };
 
     return (
         <>
-            <div className='md: container w-80 md:w-[97%] mt-8 mb-8 p-4 bg-gray-500 shadow-md rounded flex flex-col  md:flex-row justify-center items-center gap-6'>
+            <div className='md: container w-80 lg:w-[1000px] md:w-[97%] mt-8 mb-8 p-4 bg-gray-500 shadow-md rounded flex flex-col  md:flex-row justify-center items-center gap-6'>
                 <form onSubmit={handleSubmit} className="w-full md:w-[50%]">
                     <div className="mb-4">
-                        <label htmlFor="url" className="block text-gray-200 font-bold mb-2 text-center">Paste the Public Profile URL</label>
                         <input
                             type="text"
                             id="url"
                             name="url"
-                            placeholder='https://www.cloudskillsboost.google/public_profiles/<unique-id>'
+                            placeholder='Paste Public-Profile-URL here'
                             value={formData.url}
                             onChange={handleChange}
                             className="w-full px-3 py-2 bg-[#101823] border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
@@ -113,25 +125,21 @@ const Form = () => {
                     <button type="submit" className="flex justify-center items-center w-full text-gray-950 font-bold text-xl bg-gray-300 py-2 px-4 rounded hover:bg-gray-200">
                         {loading ? <Loader /> : "Calculate"}
                     </button>
-                    {error && <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                        <h2 className="text-lg text-center font-normal text-red-500 mb-2">{error}</h2>
-                    </div>}
                     {result ? (
                         <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                            <h2 className="text-lg text-center font-bold mb-2">Arcade Points: {arcadePoints}</h2>
+                            <h2 className="text-lg text-center font-bold mb-2 text-green-300">Arcade Points: {arcadePoints}</h2>
                             {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">{milestoneData} Milestone</h2>}
                         </div>
                     ) : (
                         <div className="mt-4 p-4 bg-gray-900 rounded text-center">
-                            <h2 className="text-base text-center font-bold mb-2">Arcade Points will appear here</h2>
+                            <h2 className={`text-base text-center mb-2 ${error ? "text-red-500" : ""}`}>{error ? error : status}</h2>
                         </div>
                     )}
                 </form>
 
                 <div className='w-full md:w-[50%]'>
                     <div className='p-2 font-bold text-center underline'>Please Note</div>
-                    <div className='p-2'>1. <strong>Completion Badges</strong> may be counted as a <strong>Skill Badge.</strong></div>
-                    <div className='p-2'>2. Arcade Points shown here doesn&apos;t include any <strong>Bonus Points</strong> of the <strong>Facilitator Program</strong>.</div>
+                    <div className='p-2 text-center'>Arcade Points shown here don&apos;t include any <strong>Bonus Points</strong> of the <strong>Facilitator Program</strong>.</div>
                     <div className='p-2 text-green-300 text-center'>Last Updated: <strong>24 July, 2024</strong></div>
                 </div>
             </div>

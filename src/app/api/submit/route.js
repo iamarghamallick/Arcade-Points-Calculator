@@ -25,6 +25,109 @@ const savelog = async (logData) => {
     }
 };
 
+const skillBadgeList = [
+    "Manage Kubernetes in Google Cloud",
+    "Classify Images with TensorFlow on Google Cloud",
+    "Derive Insights from BigQuery Data",
+    "Share Data Using Google Data Cloud",
+    "Get Started with Google Workspace Tools",
+    "Migrate MySQL data to Cloud SQL using Database Migration Service",
+    "Use Machine Learning APIs on Google Cloud",
+    "Mitigate Threats and Vulnerabilities with Security Command Center",
+    "Monitor Environments with Google Cloud Managed Service for Prometheus",
+    "Get Started with Dataplex",
+    "Deploy Kubernetes Applications on Google Cloud",
+    "Prepare Data for ML APIs on Google Cloud",
+    "Set Up an App Dev Environment on Google Cloud",
+    "Develop your Google Cloud Network",
+    "Implement Load Balancing on Compute Engine",
+    "Set Up a Google Cloud Network",
+    "Build a Website on Google Cloud",
+    "Cloud Architecture: Design, Implement, and Manage",
+    "Build a Secure Google Cloud Network",
+    "Engineer Data for Predictive Modeling with BigQuery ML",
+    "Implement DevOps Workflows in Google Cloud",
+    "Monitor and Log with Google Cloud Observability",
+    "Create ML Models with BigQuery ML",
+    "Build a Data Warehouse with BigQuery",
+    "Implement Cloud Security Fundamentals on Google Cloud",
+    "Develop Serverless Applications on Cloud Run",
+    "Develop Serverless Apps with Firebase",
+    "Optimize Costs for Google Kubernetes Engine",
+    "Prepare Data for Looker Dashboards and Reports",
+    "Deploy and Manage Apigee X",
+    "Build and Deploy Machine Learning Solutions on Vertex AI",
+    "Create and Manage Cloud SQL for PostgreSQL Instances",
+    "Build LookML Objects in Looker",
+    "Develop and Secure APIs with Apigee X",
+    "Manage Data Models in Looker",
+    "Detect Manufacturing Defects using Visual Inspection AI",
+    "Automate Data Capture at Scale with Document AI",
+    "Perform Predictive Data Analysis in BigQuery",
+    "Protect Cloud Traffic with BeyondCorp Enterprise (BCE) Security",
+    "Build Infrastructure with Terraform on Google Cloud",
+    "Create and Manage Cloud Spanner Instances",
+    "Use Functions, Formulas, and Charts in Google Sheets",
+    "Create and Manage AlloyDB Instances",
+    "Implement CI/CD Pipelines on Google Cloud",
+    "Create and Manage Bigtable Instances",
+    "Build Google Cloud Infrastructure for AWS Professionals",
+    "Build Google Cloud Infrastructure for Azure Professionals",
+    "Store, Process, and Manage Data on Google Cloud - Command Line",
+    "Monitor and Manage Google Cloud Resources",
+    "Analyze BigQuery Data in Connected Sheets",
+    "Store, Process, and Manage Data on Google Cloud - Console",
+    "Get Started with Looker",
+    "App Building with AppSheet",
+    "Get Started with API Gateway",
+    "Streaming Analytics into BigQuery",
+    "Cloud Functions: 3 Ways",
+    "Create a Streaming Data Lake on Cloud Storage",
+    "Get Started with Cloud Storage",
+    "App Engine: 3 Ways",
+    "Get Started with Eventarc",
+    "Get Started with Pub/Sub",
+    "Monitoring in Google Cloud",
+    "Analyze Speech and Language with Google APIs",
+    "Create a Secure Data Lake on Cloud Storage",
+    "Tag and Discover BigLake Data",
+    "Secure BigLake Data",
+    "Analyze Images with the Cloud Vision API",
+    "Protect Sensitive Data with Data Loss Prevention",
+    "Networking Fundamentals on Google Cloud",
+    "The Basics of Google Cloud Compute",
+    "Use APIs to Work with Cloud Storage",
+    "Using the Google Cloud Speech API",
+    "Develop with Apps Script and AppSheet",
+    "Analyze Sentiment with Natural Language API",
+    "Build a Data Mesh with Dataplex",
+    "Cloud Speech API: 3 Ways",
+    "Integrate BigQuery Data and Google Workspace using Apps Script",
+    "Configure Service Accounts and IAM Roles for Google Cloud",
+    "Build Custom Processors with Document AI",
+    "Explore Generative AI with the Vertex AI Gemini API",
+    "Build LangChain Applications using Vertex AI",
+    "Develop GenAI Apps with Gemini and Streamlit",
+    "Inspect Rich Documents with Gemini Multimodality and Multimodal RAG",
+    "Build Real World AI Applications with Gemini and Imagen",
+    "Prompt Design in Vertex AI",
+];
+
+const specialBadgeList = [
+    "",
+];
+
+const skillBadgeSet = new Set(skillBadgeList);
+const specialBadgeSet = new Set(specialBadgeList);
+
+const validateSkillBadge = (title) => {
+    return skillBadgeSet.has(title);
+};
+
+const validateSpecialBadge = (title) => {
+    return specialBadgeSet.has(title);
+};
+
 const validateDate = (dateStr) => {
     const regex = /Earned (\w+)\s+(\d{1,2}),\s+(\d{4})/;
     const match = dateStr.match(regex);
@@ -89,16 +192,19 @@ const arcadePointsCalculator = (data) => {
     let badgeCounted = 0;
     let allBadgesData = [], levelBadgesData = [], triviaBadgesData = [], specialBadgesData = [], monsoonBadgesData = [], skillBadgesData = [];
     data.forEach(badge => {
-        if (validateDate(badge.dateEarned).valid && (
-            badge.title === ""
-        )) {
+        // 1. Check for Special Badge
+        if (validateDate(badge.dateEarned).valid &&
+            validateSpecialBadge(badge.title)
+        ) {
             totalBadges++;
             arcadePoints++;
             badgeCounted++;
             badge.points = 1;
             allBadgesData.push(badge);
             specialBadgesData.push(badge);
-        } else if (validateDate(badge.dateEarned).valid && (
+        }
+        // 2. Check for Level Badge
+        else if (validateDate(badge.dateEarned).valid && (
             badge.title.includes("Level")
         )) {
             totalBadges++;
@@ -107,7 +213,9 @@ const arcadePointsCalculator = (data) => {
             badge.points = 1;
             allBadgesData.push(badge);
             levelBadgesData.push(badge);
-        } else if (validateDate(badge.dateEarned).valid && (
+        }
+        // 3. Check for Trivia Badge
+        else if (validateDate(badge.dateEarned).valid && (
             badge.title.includes("The Arcade Trivia")
         )) {
             totalBadges++;
@@ -116,7 +224,10 @@ const arcadePointsCalculator = (data) => {
             badge.points = 1;
             allBadgesData.push(badge);
             triviaBadgesData.push(badge);
-        } else if (validateDate(badge.dateEarned).valid) {
+        }
+        // 4. Check for Any Other Badge (Skill Badge)
+        else if (validateDate(badge.dateEarned).valid && validateSkillBadge(badge.title)) {
+            // 4.a. Check if it has earned during monsoon
             if (validateDate(badge.dateEarned).monsoon) {
                 totalBadges++;
                 badgeCounted++;
@@ -124,7 +235,9 @@ const arcadePointsCalculator = (data) => {
                 badge.points = 1;
                 allBadgesData.push(badge);
                 monsoonBadgesData.push(badge);
-            } else {
+            }
+            // 4.b. Else
+            else {
                 totalBadges++;
                 badge.points = 0.5;
                 allBadgesData.push(badge);
@@ -141,18 +254,24 @@ const arcadePointsCalculator = (data) => {
 };
 
 export async function POST(req) {
+    const startTime = process.hrtime();
     const userData = await req.json();
     const data = await scrapWebPage(userData.url);
     const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
     // console.log(allBadgesData);
-    console.log({
-        "puclic_profile": userData.url,
-        "Arcade Points": arcadePoints
-    });
 
     await savelog({
         "public_profile_url": userData.url,
         "arcade_points": arcadePoints
+    });
+
+    const endTime = process.hrtime(startTime);
+    const timeTaken = endTime[0] * 1000 + endTime[1] / 1000000;
+
+    console.log({
+        "puclic_profile": userData.url,
+        "Arcade Points": arcadePoints,
+        "Server Response Time": timeTaken + " ms",
     });
 
     return NextResponse.json({
