@@ -149,6 +149,7 @@ const Form = () => {
                     <tbody>
                         <tr className=' border border-gray-200'>
                             <th className='text-center p-2 text-bold text-xl bg-slate-600 border-r border-gray-400'>Title</th>
+                            <th className='hidden lg:block text-center p-2 text-bold text-xl bg-slate-600 border-r border-gray-400'>Date Earned</th>
                             <th className='text-center p-2 text-bold text-xl bg-slate-600'>Arcade Point</th>
                         </tr>
                         {listOfBadges.map((badge) => {
@@ -156,11 +157,13 @@ const Form = () => {
                                 <td className='text-left p-2 border-r border-gray-400'>
                                     <Link href={badge.badgeURL} target='_blank'>{badge.title}</Link>
                                 </td>
+                                <td className='hidden lg:block text-center p-2 border-r border-gray-400'>{badge.dateEarned}</td>
                                 <td className='text-center text-bold p-2'>{badge.points}</td>
                             </tr>
                         })}
                         <tr className=' border border-gray-200'>
-                            <th className='text-center p-2 text-bold text-xl bg-slate-600 border-r border-gray-400'>{`Total Points Earned from ${badgeValText}`}</th>
+                            <th className='text-center p-2 text-bold text-xl bg-slate-600 border-r lg:border-0 border-gray-400'>{`Total Points Earned from ${badgeValText}`}</th>
+                            <th className='hidden lg:block text-center p-2 text-bold text-xl bg-slate-600 border-r border-gray-400'>-</th>
                             <th className='text-center p-2 text-bold text-xl bg-slate-600'>{badgeValPoint}</th>
                         </tr>
                     </tbody>
