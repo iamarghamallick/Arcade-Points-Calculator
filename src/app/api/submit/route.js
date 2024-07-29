@@ -2,6 +2,29 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import cheerio from "cheerio";
 
+const savelog = async (logData) => {
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw16nRRvf_7TcgvZYTbQuBHYaoQQHhSUC6Uzy7O5czLJOJOkU75Jj0tmGzwg4KZe8P8/exec";
+
+    const formData = new FormData();
+    formData.append('public_profile_url', logData.public_profile_url);
+    formData.append('arcade_points', logData.arcade_points);
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            console.log('Log successfully submitted');
+        } else {
+            console.error('Log submission error');
+        }
+    } catch (error) {
+        console.error('Log submission error:', error);
+    }
+};
+
 const validateDate = (dateStr) => {
     const regex = /Earned (\w+)\s+(\d{1,2}),\s+(\d{4})/;
     const match = dateStr.match(regex);
@@ -22,7 +45,7 @@ const validateDate = (dateStr) => {
             isMonsoon = true;
     }
     return { "valid": isValid, "monsoon": isMonsoon };
-}
+};
 
 const milestoneReached = (points) => {
     // if (points >= 70) return "Champions";
@@ -31,7 +54,7 @@ const milestoneReached = (points) => {
     // if (points >= 25) return "Advanced";
     // if (points >= 10) return "Standard";
     return null;
-}
+};
 
 const scrapWebPage = async (url) => {
     const axiosResponse = await axios.request({
@@ -61,13 +84,21 @@ const scrapWebPage = async (url) => {
 };
 
 const arcadePointsCalculator = (data) => {
-    // todo
     let totalBadges = 0;
     let arcadePoints = 0;
     let badgeCounted = 0;
-    let allBadgesData = [], gameBadgesData = [], triviaBadgesData = [], monsoonBadgesData = [], skillBadgesData = [];
+    let allBadgesData = [], levelBadgesData = [], triviaBadgesData = [], specialBadgesData = [], monsoonBadgesData = [], skillBadgesData = [];
     data.forEach(badge => {
         if (validateDate(badge.dateEarned).valid && (
+            badge.title === ""
+        )) {
+            totalBadges++;
+            arcadePoints++;
+            badgeCounted++;
+            badge.points = 1;
+            allBadgesData.push(badge);
+            specialBadgesData.push(badge);
+        } else if (validateDate(badge.dateEarned).valid && (
             badge.title.includes("Level")
         )) {
             totalBadges++;
@@ -75,7 +106,7 @@ const arcadePointsCalculator = (data) => {
             badgeCounted++;
             badge.points = 1;
             allBadgesData.push(badge);
-            gameBadgesData.push(badge);
+            levelBadgesData.push(badge);
         } else if (validateDate(badge.dateEarned).valid && (
             badge.title.includes("The Arcade Trivia")
         )) {
@@ -106,22 +137,29 @@ const arcadePointsCalculator = (data) => {
     let totalPoints = arcadePoints + (skillBadges / 2);
     arcadePoints += Math.floor(skillBadges / 2);
 
-    return { allBadgesData, gameBadgesData, triviaBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints };
-}
+    return { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints };
+};
 
 export async function POST(req) {
     const userData = await req.json();
     const data = await scrapWebPage(userData.url);
-    const { allBadgesData, gameBadgesData, triviaBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
+    const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
     // console.log(allBadgesData);
     console.log({
         "puclic_profile": userData.url,
         "Arcade Points": arcadePoints
     });
+
+    await savelog({
+        "public_profile_url": userData.url,
+        "arcade_points": arcadePoints
+    });
+
     return NextResponse.json({
         badges: allBadgesData,
-        game: gameBadgesData,
+        level: levelBadgesData,
         trivia: triviaBadgesData,
+        special: specialBadgesData,
         monsoon: monsoonBadgesData,
         skill: skillBadgesData,
         points: arcadePoints,
@@ -130,4 +168,4 @@ export async function POST(req) {
     },
         { status: 200 }
     )
-}
+};

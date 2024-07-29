@@ -26,7 +26,7 @@ const Form = () => {
     const validateURL = (url) => {
         const prefix = 'https://www.cloudskillsboost.google/public_profiles/';
         return url.startsWith(prefix);
-    }
+    };
 
     const handleBadgeChange = (e) => {
         const badgeVal = e.target.value;
@@ -34,10 +34,14 @@ const Form = () => {
             setListOfBadges(result.badges);
             setBadgeValText("All Badges");
             setBadgeValPoint(totalPoints);
-        } else if (badgeVal === "gameBadges") {
-            setListOfBadges(result.game);
-            setBadgeValText("Game Badges");
-            setBadgeValPoint(result.game.length);
+        } else if (badgeVal === "specialBadges") {
+            setListOfBadges(result.special);
+            setBadgeValText("Special Badges");
+            setBadgeValPoint(result.special.length);
+        } else if (badgeVal === "levelBadges") {
+            setListOfBadges(result.level);
+            setBadgeValText("Level Badges");
+            setBadgeValPoint(result.level.length);
         } else if (badgeVal === "triviaBadges") {
             setListOfBadges(result.trivia);
             setBadgeValText("Trivia Badges");
@@ -51,7 +55,7 @@ const Form = () => {
             setBadgeValText("Skill Badges");
             setBadgeValPoint(result.skill.length / 2);
         }
-    }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -135,8 +139,9 @@ const Form = () => {
                 <h1 className='p-2 font-bold text-center underline'>Details</h1>
                 <select name="badges" id="badges" className='mt-4 mb-4 w-full md:min-w-[700px] bg-slate-600 p-4 text-xl font-bold outline-none cursor-pointer' onChange={handleBadgeChange} defaultValue="allBadges">
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="allBadges">All Badges</option>
-                    <option className='rounded-lg bg-slate-900 p-2' type="button" value="gameBadges">Game Badges</option>
+                    <option className='rounded-lg bg-slate-900 p-2' type="button" value="levelBadges">Level Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="triviaBadges">Trivia Badges</option>
+                    <option className='rounded-lg bg-slate-900 p-2' type="button" value="specialBadges">Special Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="monsoonBadges">Monsoon Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="skillBadges">Skill Badges</option>
                 </select>

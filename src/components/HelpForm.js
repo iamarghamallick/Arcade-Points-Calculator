@@ -28,7 +28,7 @@ const HelpForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const scriptURL = "https://script.google.com/macros/s/AKfycbxMY8yT-Npyyh4Mrq7PmjDna24hXceIch8UoRPWgrDtCgAsO4v1GpyR4LNbHxYHifJrQA/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbzKwTNzC1Z8gp0N0eaAU0l7Lckmzf8r8c8lPJJncgRTfUkIBTmIsU9lSW_1SHIxxYdfMw/exec";
         const form = formRef.current;
         try {
             const response = await fetch(scriptURL, {
