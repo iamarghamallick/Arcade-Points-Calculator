@@ -65,17 +65,10 @@ const Form = () => {
     };
 
     const savelog = async (logData) => {
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb1wEUiHYWg15sMfFLJ_k7gOLOIx6h54PN9Wtjvm_NqpEe9fbqE6EQreQuLP7-1Gok/exec";
-
-        const formData = new FormData();
-        formData.append('public_profile_url', logData.public_profile_url);
-        formData.append('arcade_points', logData.arcade_points);
-        formData.append('response_time', logData.response_time);
-
         try {
-            const response = await fetch(SCRIPT_URL, {
+            const response = await fetch('/api/submit-log', {
                 method: 'POST',
-                body: formData,
+                body: JSON.stringify(logData),
             });
 
             if (response.ok) {
@@ -132,6 +125,7 @@ const Form = () => {
             }, 2000);
             setLoading(false);
 
+            // save the log
             await savelog({
                 "public_profile_url": formData.url,
                 "arcade_points": data.points,

@@ -28,16 +28,15 @@ const HelpForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzKwTNzC1Z8gp0N0eaAU0l7Lckmzf8r8c8lPJJncgRTfUkIBTmIsU9lSW_1SHIxxYdfMw/exec";
         const form = formRef.current;
         try {
-            const response = await fetch(scriptURL, {
+            const response = await fetch('/api/submit-help', {
                 method: 'POST',
                 body: new FormData(form),
             });
 
             if (response.ok) {
-                // console.log('Form successfully submitted');
+                console.log('Form successfully submitted');
                 setFormData({
                     name: '',
                     email: '',
@@ -58,7 +57,7 @@ const HelpForm = () => {
             setLoading(false);
             setResponseText("Some error occured! Couldn't submit the form.");
         }
-        // console.log(formData);
+        console.log(formData);
         setLoading(false);
     };
 
