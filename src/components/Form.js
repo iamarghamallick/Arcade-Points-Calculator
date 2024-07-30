@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Loader from './Loader';
 import Link from 'next/link';
+import LinearBuffer from './LinearBuffer';
 
 const Form = () => {
     const [formData, setFormData] = useState({ url: '' });
@@ -16,6 +17,7 @@ const Form = () => {
     const [badgeValPoint, setBadgeValPoint] = useState(0);
     const [status, setStatus] = useState("Waiting for the Input...");
     const [responseTime, setResponseTime] = useState(null);
+    const [showProgressBar, setShowProgressBar] = useState(false);
 
     const handleChange = (e) => {
         setStatus("Waiting for a valid Input...");
@@ -62,10 +64,35 @@ const Form = () => {
         }
     };
 
+    const savelog = async (logData) => {
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb1wEUiHYWg15sMfFLJ_k7gOLOIx6h54PN9Wtjvm_NqpEe9fbqE6EQreQuLP7-1Gok/exec";
+
+        const formData = new FormData();
+        formData.append('public_profile_url', logData.public_profile_url);
+        formData.append('arcade_points', logData.arcade_points);
+        formData.append('response_time', logData.response_time);
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log('Log successfully submitted');
+            } else {
+                console.error('Log submission error');
+            }
+        } catch (error) {
+            console.error('Log submission error:', error);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const startTime = performance.now();
         setLoading(true);
+        setArcadePoints(null);
+        setResult(null);
         setStatus("Waiting for the server...");
         setError(null);
 
@@ -92,21 +119,29 @@ const Form = () => {
 
             const data = await response.json();
             console.log(data);
-            setResult(data);
-            setArcadePoints(data.points);
+            setShowProgressBar(true);
+            setArcadePoints(data.points ? data.points : "0");
             setMilestoneData(data.milestone);
             setTotalPoints(data.totalPoints);
             setBadgeValPoint(data.totalPoints);
             setListOfBadges(data.badges);
+            setResponseTime((data.resTime / 1000).toFixed(2));
+            setTimeout(() => {
+                setShowProgressBar(false);
+                setResult(data);
+            }, 2000);
+            setLoading(false);
+
+            await savelog({
+                "public_profile_url": formData.url,
+                "arcade_points": data.points,
+                "response_time": data.resTime,
+            });
         } catch (error) {
             setError(error.message);
         } finally {
             setLoading(false);
         }
-        const endTime = performance.now();
-        const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
-        setResponseTime(timeTaken);
-        console.log(`Response Time: ${timeTaken} s`);
     };
 
     return (
@@ -127,7 +162,7 @@ const Form = () => {
                     <button type="submit" className="flex justify-center items-center w-full text-gray-950 font-bold text-xl bg-gray-300 py-2 px-4 rounded hover:bg-gray-200">
                         {loading ? <Loader /> : "Calculate"}
                     </button>
-                    {result ? (
+                    {arcadePoints ? (
                         <div className="mt-4 p-4 bg-gray-900 rounded text-center">
                             <h2 className="text-lg text-center font-bold mb-2 text-green-300">Arcade Points: {arcadePoints}</h2>
                             {milestoneData && <h2 className="text-lg text-center font-bold mb-2 text-green-400">{milestoneData} Milestone</h2>}
@@ -145,6 +180,7 @@ const Form = () => {
                     <div className='p-2 text-green-300 text-center'>Last Updated: <strong>1 August, 2024</strong></div>
                 </div>
             </div>
+            {showProgressBar && <section className='container'><LinearBuffer /></section>}
             {result && <section className='container'>
                 <h1 className='p-2 font-bold text-center underline'>Details</h1>
                 <select name="badges" id="badges" className='mt-4 mb-4 w-full md:min-w-[700px] bg-slate-600 p-4 text-xl font-bold outline-none cursor-pointer' onChange={handleBadgeChange} defaultValue="allBadges">

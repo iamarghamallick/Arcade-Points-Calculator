@@ -2,29 +2,6 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import cheerio from "cheerio";
 
-const savelog = async (logData) => {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw16nRRvf_7TcgvZYTbQuBHYaoQQHhSUC6Uzy7O5czLJOJOkU75Jj0tmGzwg4KZe8P8/exec";
-
-    const formData = new FormData();
-    formData.append('public_profile_url', logData.public_profile_url);
-    formData.append('arcade_points', logData.arcade_points);
-
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            console.log('Log successfully submitted');
-        } else {
-            console.error('Log submission error');
-        }
-    } catch (error) {
-        console.error('Log submission error:', error);
-    }
-};
-
 const skillBadgeList = [
     "Manage Kubernetes in Google Cloud",
     "Classify Images with TensorFlow on Google Cloud",
@@ -114,6 +91,7 @@ const skillBadgeList = [
 ];
 
 const specialBadgeList = [
+    // need changes
     "",
 ];
 
@@ -260,11 +238,6 @@ export async function POST(req) {
     const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
     // console.log(allBadgesData);
 
-    await savelog({
-        "public_profile_url": userData.url,
-        "arcade_points": arcadePoints
-    });
-
     const endTime = process.hrtime(startTime);
     const timeTaken = endTime[0] * 1000 + endTime[1] / 1000000;
 
@@ -283,7 +256,8 @@ export async function POST(req) {
         skill: skillBadgesData,
         points: arcadePoints,
         totalPoints: totalPoints,
-        milestone: milestoneReached(arcadePoints)
+        milestone: milestoneReached(arcadePoints),
+        resTime: timeTaken,
     },
         { status: 200 }
     )
