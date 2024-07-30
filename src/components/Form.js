@@ -15,6 +15,7 @@ const Form = () => {
     const [badgeValText, setBadgeValText] = useState("All Badges");
     const [badgeValPoint, setBadgeValPoint] = useState(0);
     const [status, setStatus] = useState("Waiting for the Input...");
+    const [responseTime, setResponseTime] = useState(null);
 
     const handleChange = (e) => {
         setStatus("Waiting for a valid Input...");
@@ -103,8 +104,9 @@ const Form = () => {
             setLoading(false);
         }
         const endTime = performance.now();
-        const timeTaken = endTime - startTime;
-        console.log(`Response Time: ${timeTaken} ms`);
+        const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+        setResponseTime(timeTaken);
+        console.log(`Response Time: ${timeTaken} s`);
     };
 
     return (
@@ -140,7 +142,7 @@ const Form = () => {
                 <div className='w-full md:w-[50%]'>
                     <div className='p-2 font-bold text-center underline'>Please Note</div>
                     <div className='p-2 text-center'>Arcade Points shown here don&apos;t include any <strong>Bonus Points</strong> of the <strong>Facilitator Program</strong>.</div>
-                    <div className='p-2 text-green-300 text-center'>Last Updated: <strong>24 July, 2024</strong></div>
+                    <div className='p-2 text-green-300 text-center'>Last Updated: <strong>1 August, 2024</strong></div>
                 </div>
             </div>
             {result && <section className='container'>
@@ -184,6 +186,7 @@ const Form = () => {
                     <h1>#</h1>
                     <h1>If you believe there is an error in the points calculated, please fill out <Link href="/help"><strong className='underline'>User Query Form</strong></Link>.</h1>
                 </div>
+                {responseTime && <h1 className='text-right text-sm text-gray-300 mb-4 mx-2'>{`~ Response Time: ${responseTime} seconds`}</h1>}
             </section>}
         </>
     );
