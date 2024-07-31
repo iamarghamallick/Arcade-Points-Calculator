@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Loader from './Loader';
 import Link from 'next/link';
 import LinearBuffer from './LinearBuffer';
+import FaciInfo from './FaciInfo';
 
 const Form = () => {
     const [formData, setFormData] = useState({ url: '' });
@@ -175,8 +176,11 @@ const Form = () => {
                 </div>
             </div>
             {showProgressBar && <section className='container'><LinearBuffer /></section>}
+
+            {result && <FaciInfo faciData={result.faciCounts} />}
+
             {result && <section className='container'>
-                <h1 className='p-2 font-bold text-center underline'>Details</h1>
+                <h1 className='p-2 font-bold text-center'>All Badge Details</h1>
                 <select name="badges" id="badges" className='mt-4 mb-4 w-full md:min-w-[700px] bg-slate-600 p-4 text-xl font-bold outline-none cursor-pointer' onChange={handleBadgeChange} defaultValue="allBadges">
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="allBadges">All Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="levelBadges">Level Badges</option>

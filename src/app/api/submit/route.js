@@ -271,7 +271,7 @@ export async function POST(req) {
         points: arcadePoints,
         totalPoints: totalPoints,
         milestone: milestoneReached(arcadePoints),
-        faciCounts: faciCounts,
+        faciCounts,
         resTime: timeTaken,
     },
         { status: 200 }
