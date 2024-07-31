@@ -114,6 +114,7 @@ const validateDate = (dateStr) => {
 
     let isMonsoon = false;
     let isValid = false;
+    let isFaci = false;
 
     if (match) {
         const month = monthMap[match[1]];
@@ -124,8 +125,10 @@ const validateDate = (dateStr) => {
             isValid = true;
         if ((year == 2024 && month == 7 && (date >= 22 || date <= 31)))
             isMonsoon = true;
+        if (isMonsoon || month == 8 || (month == 9 && date <= 22))
+            isFaci = true;
     }
-    return { "valid": isValid, "monsoon": isMonsoon };
+    return { "valid": isValid, "monsoon": isMonsoon, "faci": isFaci };
 };
 
 const milestoneReached = (points) => {
@@ -168,45 +171,55 @@ const arcadePointsCalculator = (data) => {
     let totalBadges = 0;
     let arcadePoints = 0;
     let badgeCounted = 0;
+
     let allBadgesData = [], levelBadgesData = [], triviaBadgesData = [], specialBadgesData = [], monsoonBadgesData = [], skillBadgesData = [];
+
+    let faciGame = 0;
+    let faciTrivia = 0;
+    let faciSkill = 0;
+
     data.forEach(badge => {
+        const { valid, monsoon, faci } = validateDate(badge.dateEarned);
         // 1. Check for Special Badge
-        if (validateDate(badge.dateEarned).valid &&
+        if (valid &&
             validateSpecialBadge(badge.title)
         ) {
             totalBadges++;
             arcadePoints++;
             badgeCounted++;
             badge.points = 1;
+            faciGame += faci ? 1 : 0;
             allBadgesData.push(badge);
             specialBadgesData.push(badge);
         }
         // 2. Check for Level Badge
-        else if (validateDate(badge.dateEarned).valid && (
+        else if (valid && (
             badge.title.includes("Level")
         )) {
             totalBadges++;
             arcadePoints++;
             badgeCounted++;
             badge.points = 1;
+            faciGame += faci ? 1 : 0;
             allBadgesData.push(badge);
             levelBadgesData.push(badge);
         }
         // 3. Check for Trivia Badge
-        else if (validateDate(badge.dateEarned).valid && (
+        else if (valid && (
             badge.title.includes("The Arcade Trivia")
         )) {
             totalBadges++;
             arcadePoints++;
             badgeCounted++;
             badge.points = 1;
+            faciTrivia += faci ? 1 : 0;
             allBadgesData.push(badge);
             triviaBadgesData.push(badge);
         }
         // 4. Check for Any Other Badge (Skill Badge)
-        else if (validateDate(badge.dateEarned).valid && validateSkillBadge(badge.title)) {
+        else if (valid && validateSkillBadge(badge.title)) {
             // 4.a. Check if it has earned during monsoon
-            if (validateDate(badge.dateEarned).monsoon) {
+            if (monsoon) {
                 totalBadges++;
                 badgeCounted++;
                 arcadePoints++;
@@ -221,6 +234,7 @@ const arcadePointsCalculator = (data) => {
                 allBadgesData.push(badge);
                 skillBadgesData.push(badge);
             }
+            faciSkill += faci ? 1 : 0;
         }
     });
 
@@ -228,14 +242,14 @@ const arcadePointsCalculator = (data) => {
     let totalPoints = arcadePoints + (skillBadges / 2);
     arcadePoints += Math.floor(skillBadges / 2);
 
-    return { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints };
+    return { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints, faciCounts: { faciGame, faciTrivia, faciSkill } };
 };
 
 export async function POST(req) {
     const startTime = process.hrtime();
     const userData = await req.json();
     const data = await scrapWebPage(userData.url);
-    const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints } = arcadePointsCalculator(data);
+    const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints, faciCounts } = arcadePointsCalculator(data);
     // console.log(allBadgesData);
 
     const endTime = process.hrtime(startTime);
@@ -257,6 +271,7 @@ export async function POST(req) {
         points: arcadePoints,
         totalPoints: totalPoints,
         milestone: milestoneReached(arcadePoints),
+        faciCounts: faciCounts,
         resTime: timeTaken,
     },
         { status: 200 }
