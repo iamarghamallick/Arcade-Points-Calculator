@@ -57,3 +57,36 @@ tr:nth-child(odd) {
   scrollbar-width: thin;
   scrollbar-color: #1b2546 gray;
 }
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.scrolling-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 60s linear infinite;
+  width: 100vw;
+}
+
+.scrolling-text:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 425px) {
+  .scrolling-text {
+    animation-duration: 15s;
+  }
+}
+
+@media (max-width: 768px) {
+  .scrolling-text {
+    animation-duration: 30s;
+  }
+}
