@@ -95,16 +95,22 @@ const specialBadgeList = [
     "",
 ];
 
+const digitalLeaderBadgeList = [
+    "Digital Transformation with Google Cloud",
+    "Exploring Data Transformation with Google Cloud",
+    "Innovating with Google Cloud Artificial Intelligence",
+    "Modernize Infrastructure and Applications with Google Cloud",
+    "Trust and Security with Google Cloud",
+    "Scaling with Google Cloud Operations",
+]
+
 const skillBadgeSet = new Set(skillBadgeList);
 const specialBadgeSet = new Set(specialBadgeList);
+const digitalLeaderBadgeSet = new Set(digitalLeaderBadgeList);
 
-const validateSkillBadge = (title) => {
-    return skillBadgeSet.has(title);
-};
-
-const validateSpecialBadge = (title) => {
-    return specialBadgeSet.has(title);
-};
+const validateSkillBadge = (title) => skillBadgeSet.has(title);
+const validateSpecialBadge = (title) => specialBadgeSet.has(title);
+const validateDigitalLeaderBadge = (title) => digitalLeaderBadgeSet.has(title);
 
 const validateDate = (dateStr) => {
     const regex = /Earned (\w+)\s+(\d{1,2}),\s+(\d{4})/;
@@ -115,6 +121,7 @@ const validateDate = (dateStr) => {
     let isMonsoon = false;
     let isValid = false;
     let isFaci = false;
+    let isDigi = false;
 
     if (match) {
         const month = monthMap[match[1]];
@@ -127,8 +134,10 @@ const validateDate = (dateStr) => {
             isMonsoon = true;
         if (isMonsoon || month == 8 || (month == 9 && date <= 22))
             isFaci = true;
+        if (year == 2024 && month == 8 && (date >= 1 || date <= 5))
+            isDigi = true;
     }
-    return { "valid": isValid, "monsoon": isMonsoon, "faci": isFaci };
+    return { "valid": isValid, "monsoon": isMonsoon, "faci": isFaci, "digi": isDigi };
 };
 
 const milestoneReached = (points) => {
@@ -172,16 +181,22 @@ const arcadePointsCalculator = (data) => {
     let arcadePoints = 0;
     let badgeCounted = 0;
 
-    let allBadgesData = [], levelBadgesData = [], triviaBadgesData = [], specialBadgesData = [], monsoonBadgesData = [], skillBadgesData = [];
+    let allBadgesData = [], levelBadgesData = [], triviaBadgesData = [], specialBadgesData = [], monsoonBadgesData = [], skillBadgesData = [], digitalLeaderBadgesData = [];
 
     let faciGame = 0;
     let faciTrivia = 0;
     let faciSkill = 0;
 
     data.forEach(badge => {
-        const { valid, monsoon, faci } = validateDate(badge.dateEarned);
-        // 1. Check for Special Badge
-        if (valid &&
+        const { valid, monsoon, faci, digi } = validateDate(badge.dateEarned);
+        // Check for digital leader badges
+        if (digi && validateDigitalLeaderBadge(badge.title)) {
+            badge.points = '-';
+            allBadgesData.push(badge);
+            digitalLeaderBadgesData.push(badge);
+        }
+        // Check for Special Badge
+        else if (valid &&
             validateSpecialBadge(badge.title)
         ) {
             totalBadges++;
@@ -192,7 +207,7 @@ const arcadePointsCalculator = (data) => {
             allBadgesData.push(badge);
             specialBadgesData.push(badge);
         }
-        // 2. Check for Level Badge
+        // Check for Level Badge
         else if (valid && (
             badge.title.includes("Level")
         )) {
@@ -204,7 +219,7 @@ const arcadePointsCalculator = (data) => {
             allBadgesData.push(badge);
             levelBadgesData.push(badge);
         }
-        // 3. Check for Trivia Badge
+        // Check for Trivia Badge
         else if (valid && (
             badge.title.includes("The Arcade Trivia")
         )) {
@@ -216,9 +231,9 @@ const arcadePointsCalculator = (data) => {
             allBadgesData.push(badge);
             triviaBadgesData.push(badge);
         }
-        // 4. Check for Any Other Badge (Skill Badge)
+        // Check for Any Other Badge (Skill Badge)
         else if (valid && validateSkillBadge(badge.title)) {
-            // 4.a. Check if it has earned during monsoon
+            // Check if it has earned during monsoon
             if (monsoon) {
                 totalBadges++;
                 badgeCounted++;
@@ -227,7 +242,7 @@ const arcadePointsCalculator = (data) => {
                 allBadgesData.push(badge);
                 monsoonBadgesData.push(badge);
             }
-            // 4.b. Else
+            // Else
             else {
                 totalBadges++;
                 badge.points = 0.5;
@@ -242,14 +257,20 @@ const arcadePointsCalculator = (data) => {
     let totalPoints = arcadePoints + (skillBadges / 2);
     arcadePoints += Math.floor(skillBadges / 2);
 
-    return { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints, faciCounts: { faciGame, faciTrivia, faciSkill } };
+    // checking if the digital leader path is completed
+    if (digitalLeaderBadgesData.length === 6) {
+        arcadePoints += 5;
+        totalPoints += 5;
+    }
+
+    return { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, digitalLeaderBadgesData, arcadePoints, totalPoints, faciCounts: { faciGame, faciTrivia, faciSkill } };
 };
 
 export async function POST(req) {
     const startTime = process.hrtime();
     const userData = await req.json();
     const data = await scrapWebPage(userData.url);
-    const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, arcadePoints, totalPoints, faciCounts } = arcadePointsCalculator(data);
+    const { allBadgesData, levelBadgesData, triviaBadgesData, specialBadgesData, monsoonBadgesData, skillBadgesData, digitalLeaderBadgesData, arcadePoints, totalPoints, faciCounts } = arcadePointsCalculator(data);
     // console.log(allBadgesData);
 
     const endTime = process.hrtime(startTime);
@@ -268,6 +289,7 @@ export async function POST(req) {
         special: specialBadgesData,
         monsoon: monsoonBadgesData,
         skill: skillBadgesData,
+        digital: digitalLeaderBadgesData,
         points: arcadePoints,
         totalPoints: totalPoints,
         milestone: milestoneReached(arcadePoints),

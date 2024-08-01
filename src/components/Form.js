@@ -62,6 +62,10 @@ const Form = () => {
             setListOfBadges(result.skill);
             setBadgeValText("Skill Badges");
             setBadgeValPoint(result.skill.length / 2);
+        } else if (badgeVal === "digiLeaderBadges") {
+            setListOfBadges(result.digital);
+            setBadgeValText("Digital Leader Badges");
+            setBadgeValPoint(result.digital.length === 6 ? 5 : 0);
         }
     };
 
@@ -187,6 +191,7 @@ const Form = () => {
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="triviaBadges">Trivia Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="specialBadges">Special Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="monsoonBadges">Monsoon Badges</option>
+                    <option className='rounded-lg bg-slate-900 p-2' type="button" value="digiLeaderBadges">Digital Leader Badges</option>
                     <option className='rounded-lg bg-slate-900 p-2' type="button" value="skillBadges">Skill Badges</option>
                 </select>
                 <table className='border-collapse w-full mb-4'>
