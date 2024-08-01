@@ -39,7 +39,7 @@ const FaciInfo = ({ faciData }) => {
             "color": "red",
             "milestoneName": "Milestone 1"
         })
-    }, [])
+    }, [faciData])
 
 
     return (
