@@ -4,7 +4,7 @@ import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter } from 'react-
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-300 dark:bg-gray-700 text-white">
+        <footer className="bg-blue-200 dark:bg-gray-700 text-gray-800 dark:text-white">
             <hr />
             <div className="container mx-auto px-4 flex flex-col lg:flex-row-reverse items-center justify-center lg:justify-between p-4">
                 <div className="my-2 flex justify-center items-center">
@@ -14,7 +14,7 @@ const Footer = () => {
                     <Link href='https://facebook.com/iam_arghamallick' target='_blank'><FaFacebook size={30} className='mx-2 text-gray-900 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white' /></Link>
                     <Link href='https://instagram.com/iamarghamallick' target='_blank'><FaInstagram size={30} className='mx-2 text-gray-900 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white' /></Link>
                 </div>
-                <p className="text-[1rem] lg:text-xl my-2 text-gray-300 text-center">&copy; Developed for <strong><Link href="https://go.cloudskillsboost.google/arcade">Arcade 2024 Phase-II (July-Dec)</Link></strong> by <Link href="https://iamarghamallick.github.io/portfolio/" target='_blank'><strong>Argha Mallick</strong></Link></p>
+                <p className="text-[1rem] lg:text-xl my-2 text-gray-800 dark:text-gray-300 text-center">&copy; Developed for <strong><Link href="https://go.cloudskillsboost.google/arcade">Arcade 2024 Phase-II (July-Dec)</Link></strong> by <Link href="https://iamarghamallick.github.io/portfolio/" target='_blank'><strong>Argha Mallick</strong></Link></p>
             </div>
         </footer>
     )

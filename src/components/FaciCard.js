@@ -23,7 +23,7 @@ const FaciCard = ({ milestone }) => {
     const { totalGame, totalTrivia, totalSkill, totalMilestonePoints } = getMilestoneTotal(milestoneName);
 
     return (
-        <div className='bg-gray-700 p-2 border border-gray-300 rounded-md'>
+        <div className='bg-blue-200 dark:bg-gray-700 p-2 border border-blue-800 dark:border-gray-300 rounded-md'>
             <div className='flex justify-between items-center'>
                 <h1 className='text-sm md:text-xl font-semibold'>{`Game (${game}/${totalGame})`}</h1>
                 <h1 className='text-sm md:text-xl font-semibold'>-</h1>

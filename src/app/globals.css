@@ -6,6 +6,10 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --bg-color: #e2eeff;
+  --scrollbar-track-bg: #9dacff;
+  --scrollbar-thumb-bg: #4385ff;
+  --scrollbar-hover: #2f00ff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,12 +17,16 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+    --bg-color: #101823;
+    --scrollbar-track-bg: #172055;
+    --scrollbar-thumb-bg: #687388;
+    --scrollbar-hover: #555;
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #101823;
+  background: var(--bg-color);
 }
 
 @layer utilities {
@@ -27,29 +35,21 @@ body {
   }
 }
 
-tr:nth-child(even) {
-  background-color: #464646;
-}
-
-tr:nth-child(odd) {
-  background-color: #1f1f1f;
-}
-
 /* Custom Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #172055;
+  background: var(--scrollbar-track-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #687388;
+  background: var(--scrollbar-thumb-bg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--scrollbar-hover);
 }
 
 /* Firefox */
