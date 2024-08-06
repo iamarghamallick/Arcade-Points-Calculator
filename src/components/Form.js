@@ -176,7 +176,7 @@ const Form = () => {
                 <div className='w-full md:w-[50%]'>
                     <div className='p-2 font-bold text-center underline'>Please Note</div>
                     <div className='p-2 text-center'>Arcade Points shown here don&apos;t include any <strong>Bonus Points</strong> of the <strong>Facilitator Program</strong>.</div>
-                    <div className='p-2 text-green-800 dark:text-green-300 text-center'>Last Updated: <strong>1 August, 2024</strong></div>
+                    <div className='p-2 text-green-800 dark:text-green-300 text-center'>Last Updated: <strong>6 August, 2024</strong></div>
                 </div>
             </div>
             {showProgressBar && <section className='container'><LinearBuffer /></section>}

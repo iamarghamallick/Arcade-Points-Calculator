@@ -92,7 +92,7 @@ const skillBadgeList = [
 
 const specialBadgeList = [
     // need changes
-    "",
+    "The Arcade Base Camp August 2024",
 ];
 
 const digitalLeaderBadgeList = [
@@ -132,7 +132,7 @@ const validateDate = (dateStr) => {
             isValid = true;
         if ((year == 2024 && month == 7 && (date >= 22 || date <= 31)))
             isMonsoon = true;
-        if (isMonsoon || month == 8 || (month == 9 && date <= 22))
+        if (isMonsoon || month == 8 || (month == 9 && date <= 27))
             isFaci = true;
         if (year == 2024 && month == 8 && (date >= 1 || date <= 5))
             isDigi = true;
